@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shaun Shibata - Personal Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    
+    /* Glassmorphism */
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Gradient backgrounds */
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .dark .gradient-bg {
+      background: linear-gradient(135deg, #1a1c3d 0%, #2d1b69 100%);
+    }
+    
+    /* Card hover effects */
+    .card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Smooth scroll */
+    html { scroll-behavior: smooth; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+    ::-webkit-scrollbar-thumb { 
+      background: linear-gradient(135deg, #667eea, #764ba2); 
+      border-radius: 5px;
+    }
+    
+    /* Animated gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #4e65ff);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-shift 4s ease infinite;
+    }
+    
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    /* Floating animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    .float { animation: float 6s ease-in-out infinite; }
+    
+    /* Pulse animation */
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    /* Sidebar animations */
+    .nav-item {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .nav-item:hover::before {
+      left: 100%;
+    }
+    
+    /* Section reveal animation */
+    .section-card {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 0.6s ease forwards;
+    }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Loading animation */
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #667eea;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Glow effect */
+    .glow {
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.6),
+                  0 0 40px rgba(102, 126, 234, 0.4),
+                  0 0 60px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* Typography enhancement */
+    .section-content h3 {
+      @apply text-lg font-semibold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400;
+    }
+    
+    .section-content strong {
+      @apply text-purple-400;
+    }
+    
+    /* Interactive list items */
+    .list-item {
+      @apply relative pl-6 py-1 transition-all duration-300 cursor-default;
+    }
+    
+    .list-item:hover {
+      @apply text-purple-300 transform translate-x-2;
+    }
+    
+    .list-item::before {
+      content: '▸';
+      @apply absolute left-0 text-purple-500 transition-transform duration-300;
+    }
+    
+    .list-item:hover::before {
+      @apply transform rotate-90;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen overflow-x-hidden">
+  <!-- Animated Background -->
+  <div class="fixed inset-0 -z-10">
+    <div class="absolute inset-0 gradient-bg opacity-30"></div>
+    <div class="absolute inset-0 bg-gray-900"></div>
+    <!-- Floating orbs -->
+    <div class="absolute top-20 left-20 w-72 h-72 bg-purple-500 rounded-full filter blur-[128px] opacity-20 float"></div>
+    <div class="absolute bottom-20 right-20 w-96 h-96 bg-pink-500 rounded-full filter blur-[128px] opacity-20 float" style="animation-delay: 2s;"></div>
+    <div class="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-500 rounded-full filter blur-[128px] opacity-20 float" style="animation-delay: 4s;"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="glass sticky top-0 z-50 border-b border-white/10">
+    <div class="max-w-7xl mx-auto flex items-center justify-between p-6">
+      <div class="space-y-1">
+        <h1 class="text-4xl font-black gradient-text">Shaun Shibata</h1>
+        <p class="text-sm text-gray-400 flex items-center gap-2">
+          <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+          Berkeley, California • PST
+        </p>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="themeToggle" class="p-3 glass rounded-xl hover:scale-110 transition-transform duration-300 glow">
+          <span id="themeIcon" class="text-2xl">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="w-64 glass border-r border-white/10 h-[calc(100vh-88px)] sticky top-[88px] overflow-y-auto">
+      <nav class="p-6">
+        <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">Navigation</h2>
+        <ul id="sectionNav" class="space-y-2">
+          <!-- Nav items will be inserted by JS -->
+        </ul>
+      </nav>
+      
+      <!-- Quick Stats -->
+      <div class="p-6 border-t border-white/10">
+        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Stats</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-300">Age</span>
+            <span class="font-semibold text-purple-400">24</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-300">Education</span>
+            <span class="font-semibold text-purple-400">Berkeley City College</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-300">Goals</span>
+            <span class="font-semibold text-purple-400">15 Active</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <!-- Hero Section -->
+      <div class="glass rounded-2xl p-8 mb-8 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20"></div>
+        <div class="relative z-10">
+          <h2 class="text-3xl font-bold mb-4">Welcome to Your Personal Dashboard</h2>
+          <p class="text-gray-300 max-w-2xl">Track your journey, goals, and milestones in one beautiful place. Your story, visualized.</p>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="flex justify-center items-center h-64">
+        <div class="loader"></div>
+      </div>
+
+      <!-- Sections Grid -->
+      <div id="sectionsContainer" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 hidden">
+        <!-- Section cards will be inserted by JS -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Embed user data JSON -->
+  <script id="user-data" type="application/json">
+  {
+    "basic_info": {"full_name":"Shaun Shibata","preferred_name":"Shaun","nickname":"Shaun","pronouns":"He/Him","birth_date":"08/12/2000","age":"24","gender":"Male","nationality":"Korean, Japanese","hometown":"Honolulu, Hawaii","current_residence":"Berkeley, California","timezone":"PST","spoken_languages":[]},
+    "contact_info": {"email":"shibatashaun@gmail.com","phone":"(808)690-7960","address":"3426 Adeline Street 94608 Emeryville, California","website_or_portfolio":"None","linkedin":"","github":"None","social_media":{"instagram":"https://www.instagram.com/asurashaun","twitter":"","facebook":"","tiktok":""}},
+    "education": {"high_school":{"name":"President Theodore Roosevelt High School","graduation_year":"2018"},"colleges":[{"name":"Berkeley City College","degree":"Associate Transfer Degree","major":"Economics","minor":"None","gpa":"3.607","start_year":"Aug 2023","expected_graduation_year":"May 2026"}],"certifications":[],"online_courses":[]},
+    "career": {"current_job":{"title":"Barback","company":"Always Fishing Event Group","location":"Bay Area, California","start_date":"April 2025","description":""},"past_jobs":[],"internships":["Hopefully U.S Bank"],"volunteer_work":[],"dream_jobs":["Investment Banker","Hedgefund Manager"],"resume_link":""},
+    "goals": {"short_term_goals":["Lose Weight","Cook & Meal Plan More","Keep my grades up","Get another Job","Develop a Workflow for Passive Income","Save money & Manage finances","Manage Work/Life Balance"],"long_term_goals":["Get a stable Job & Income","Attain Goal weight for 180","Give Nagi, Nami, & Indra a Happy life","Get more Tattoos","Get a car","Get Driver's License","Live in an SF skyscraper","250k+ Yearly Income","Sustain a Long-term Relationship"],"bucket_list":["Start a Family","Get Married","Travel the World","Have multiple investment & vacation properties worldwide","Retirement Fund"]},
+    "personal_development": {"skills_to_learn":["n8n workflows","Web Frontend Coding"],"certifications_to_earn":[],"habits_to_build":["Discipline","Sleeping Early","Sustaining a Caloric Deficit","Waking up on time","Saving money"],"fears_to_overcome":["The world is not going to end"],"books_to_read":[],"mentors":[]},
+    "interests_and_hobbies": {"creative":["Developing n8n workflows"],"sports_and_fitness":["Muay Thai / Kickbocking"],"academic":["Ecnomics & Data Science"],"entertainment":["Youtube/Netflix"],"travel_and_adventure":["Motorcycle Riding"],"tech_and_gaming":["Almost no gaming"],"collecting":["None"]},
+    "personality": {"mbti_type":"INTP","enneagram":"2, 4, 6","love_languages":["Quality Time","Words of Affirmation","Physical Touch","Acts of Service"],"values":["Loyalty","Honesty","Trustworthiness"],"strengths":[],"weaknesses":["Impusilvity","Addiction","Handling my emotions","High Stress Situations"],"motivations":["Life is Long but Short","Freedom","Happiness","Stability"],"stress_triggers":["Yelling","OVerwhelmed","Deadlines","Lying"],"coping_mechanisms":["Weed","Zoning Out","Overthinking"]},
+    "health_and_wellness": {"physical_health_goals":["Workout multiple times a week","180 Goal Weight","Meal Prep & Cook more"],"mental_health_goals":["Therapy","Coping with Life"],"therapy_or_coaching":{"currently_attending":false,"therapist_name":"","topics":[]},"fitness_routine":"None","diet_or_nutrition_goals":"Be in a Caloric Deficit"},
+    "finance": {"monthly_budget":{"income_sources":[],"expenses":[]},"savings_goals":[],"investment_plans":[],"financial_literacy_goals":[]},
+    "relationships": {"relationship_status":"Single","partner_info":{"name":"","anniversary":"","shared_goals":[]},"friends":["Josie","Tifa","Ivory","Poulette","Hwanzin","Maryanne"],"family_members":["Sharon Yamauchi","George Shbata","Sandie Shibata","Grant Shibata","Joy Marsh","Jordyn Shibata","Jaycie Shibata"],"networking_contacts":[]},
+    "spirituality_and_beliefs": {"religion_or_spiritual_belief":"Aethiest","practices":["None"],"values":["Already Listed"],"goals":["Already Listed"]},
+    "travel": {"places_visited":["Las Vegas, Nevada","Los Angeles, California","Seattle, Washington","Portland, Oregon","Alaska","Virginia","Florida","Pennsylvania","D.C","North Carolina","Maryland","New York","Japan","South Korea","Canada"],"places_to_visit":[],"dream_destinations":["Europe"],"travel_preferences":{"solo_or_group":"Both","preferred_transportation":"Plane & Rental","budget_range":"2000$"}},
+    "notes_and_journal": {"daily_reflections":[],"milestones":[],"gratitude_list":[],"dreams_or_ideas":[]},
+    "timeline_and_milestones": {"life_chapters":["Early Childhood (2000–2007)","Elementary Years (2008–2013)","Middle School Transition (2013–2015)","High School & Teen Struggles (2015–2018)","Post-Graduation & Real World Start (2018–2020)","First Love and Emotional Growth (2020–2021)","Major Relationship & Turning Point (2021–2023)","My Training Arc / The Time of Self-Improvement (2024–Present)"],"life_events":[{"years":"2000 - 2001","event":""},{"years":"2001 - 2002","event":""},{"years":"2002 - 2003","event":""},{"years":"2003 - 2004","event":""},{"years":"2004 - 2005","event":""},{"years":"2005 - 2006","event":""},{"years":"2006 - 2007","event":""},{"years":"2007 - 2008","event":""},{"years":"2008 - 2009","event":""},{"years":"2009 - 2010","event":""},{"years":"2010 - 2011","event":""},{"years":"2011 - 2012","event":""},{"years":"2012 - 2013","event":""},{"years":"2013 - 2014","event":""},{"years":"2014 - 2015","event":""},{"years":"2015 - 2016","event":""},{"years":"2016 - 2017","event":""},{"years":"2017 - 2018","event":""},{"years":"2018 - 2019","event":""},{"years":"2019 - 2020","event":""},{"years":"2020 - 2021","event":""},{"years":"2021 - 2022","event":""},{"years":"2022 - 2023","event":""},{"years":"2023 - 2024","event":""},{"years":"2024 - 2025","event":""}]}
+  }
+  </script>
+
+  <script>
+    const userData = JSON.parse(document.getElementById('user-data').textContent);
+    
+    const sectionIcons = {
+      basic_info: '👤',
+      contact_info: '📧',
+      education: '🎓',
+      career: '💼',
+      goals: '🎯',
+      personal_development: '🌱',
+      interests_and_hobbies: '🎨',
+      personality: '🧠',
+      health_and_wellness: '💪',
+      finance: '💰',
+      relationships: '❤️',
+      spirituality_and_beliefs: '✨',
+      travel: '✈️',
+      notes_and_journal: '📝',
+      timeline_and_milestones: '📅'
+    };
+
+    const sectionColors = {
+      basic_info: 'from-blue-500 to-purple-500',
+      contact_info: 'from-green-500 to-teal-500',
+      education: 'from-yellow-500 to-orange-500',
+      career: 'from-purple-500 to-pink-500',
+      goals: 'from-red-500 to-pink-500',
+      personal_development: 'from-green-500 to-emerald-500',
+      interests_and_hobbies: 'from-indigo-500 to-purple-500',
+      personality: 'from-pink-500 to-rose-500',
+      health_and_wellness: 'from-cyan-500 to-blue-500',
+      finance: 'from-yellow-500 to-amber-500',
+      relationships: 'from-red-500 to-rose-500',
+      spirituality_and_beliefs: 'from-purple-500 to-indigo-500',
+      travel: 'from-blue-500 to-cyan-500',
+      notes_and_journal: 'from-gray-500 to-gray-600',
+      timeline_and_milestones: 'from-indigo-500 to-blue-500'
+    };
+
+    function prettify(key) {
+      const titles = {
+        basic_info: 'Basic Information',
+        contact_info: 'Contact Information',
+        education: 'Education',
+        career: 'Career',
+        goals: 'Goals & Aspirations',
+        personal_development: 'Personal Development',
+        interests_and_hobbies: 'Interests & Hobbies',
+        personality: 'Personality',
+        health_and_wellness: 'Health & Wellness',
+        finance: 'Finance',
+        relationships: 'Relationships',
+        spirituality_and_beliefs: 'Spirituality & Beliefs',
+        travel: 'Travel',
+        notes_and_journal: 'Notes & Journal',
+        timeline_and_milestones: 'Timeline & Milestones'
+      };
+      return titles[key] || key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function formatValue(val, isTimeline = false) {
+      if (Array.isArray(val)) {
+        if (!val.length) return '<span class="text-gray-500 italic">None specified</span>';
+        return '<ul class="space-y-2">' + val.map(item => 
+          `<li class="list-item">${formatValue(item)}</li>`
+        ).join('') + '</ul>';
+      }
+      if (typeof val === 'object' && val !== null) {
+        return '<div class="space-y-3">' + Object.entries(val)
+          .filter(([k, v]) => v && (Array.isArray(v) ? v.length > 0 : v !== ''))
+          .map(([k, v]) => `
+            <div class="border-l-2 border-purple-500/30 pl-4">
+              <strong class="text-purple-400 capitalize">${k.replace(/_/g,' ')}</strong>
+              <div class="mt-1 text-gray-300">${formatValue(v)}</div>
+            </div>
+          `).join('') + '</div>';
+      }
+      return val || '<span class="text-gray-500 italic">Not specified</span>';
+    }
+
+    function createNav() {
+      const nav = document.getElementById('sectionNav');
+      Object.keys(userData).forEach((key, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <button data-section="${key}" class="nav-item w-full text-left px-4 py-3 rounded-xl glass hover:bg-white/10 transition-all duration-300 flex items-center gap-3 group">
+            <span class="text-2xl group-hover:scale-110 transition-transform duration-300">${sectionIcons[key]}</span>
+            <span class="font-medium">${prettify(key)}</span>
+          </button>
+        `;
+        li.style.animationDelay = `${index * 0.05}s`;
+        li.classList.add('section-card');
+        nav.appendChild(li);
+      });
+      
+      nav.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const section = document.getElementById(btn.dataset.section);
+          section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          section.classList.add('animate-pulse');
+          setTimeout(() => section.classList.remove('animate-pulse'), 1000);
+        });
+      });
+    }
+
+    function renderSections() {
+      const container = document.getElementById('sectionsContainer');
+      
+      Object.entries(userData).forEach(([key, data], index) => {
+        const section = document.createElement('div');
+        section.id = key;
+        section.className = `card section-card glass rounded-2xl p-6 relative overflow-hidden group`;
+        section.style.animationDelay = `${index * 0.1}s`;
+        
+        // Background gradient
+        const bgGradient = document.createElement('div');
+        bgGradient.className = `absolute inset-0 bg-gradient-to-br ${sectionColors[key]} opacity-10 group-hover:opacity-20 transition-opacity duration-500`;
+        section.appendChild(bgGradient);
+        
+        // Content
+        const content = document.createElement('div');
+        content.className = 'relative z-10 section-content';
+        
+        let inner = `
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-bold flex items-center gap-3">
+              <span class="text-3xl">${sectionIcons[key]}</span>
+              ${prettify(key)}
+            </h2>
+          </div>
+          <div class="mt-4 space-y-3">
+        `;
+        
+        if (key === 'timeline_and_milestones') {
+          inner += '<h3>Life Chapters</h3>';
+          inner += '<div class="space-y-2">';
+          data.life_chapters.forEach((chapter, i) => {
+            inner += `<div class="list-item">${chapter}</div>`;
+          });
+          inner += '</div>';
+          
+          const hasEvents = data.life_events.some(e => e.event);
+          if (hasEvents) {
+            inner += '<h3 class="mt-6">Timeline Events</h3>';
+            inner += '<div class="space-y-2">';
+            data.life_events.filter(e => e.event).forEach(e => {
+              inner += `<div class="list-item"><strong class="text-purple-400">${e.years}:</strong> ${e.event}</div>`;
+            });
+            inner += '</div>';
+          }
+        } else if (key === 'goals') {
+          ['short_term_goals', 'long_term_goals', 'bucket_list'].forEach(goalType => {
+            if (data[goalType] && data[goalType].length) {
+              inner += `<h3>${goalType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</h3>`;
+              inner += formatValue(data[goalType]);
+            }
+          });
+        } else {
+          inner += formatValue(data);
+        }
+        
+        inner += '</div>';
+        content.innerHTML = inner;
+        section.appendChild(content);
+        container.appendChild(section);
+      });
+      
+      // Show sections after loading
+      setTimeout(() => {
+        document.getElementById('loadingState').classList.add('hidden');
+        container.classList.remove('hidden');
+      }, 500);
+    }
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    let isDark = true;
+    
+    themeToggle.addEventListener('click', () => {
+      isDark = !isDark;
+      document.documentElement.classList.toggle('dark', isDark);
+      themeIcon.textContent = isDark ? '🌙' : '☀️';
+      themeToggle.classList.add('animate-spin');
+      setTimeout(() => themeToggle.classList.remove('animate-spin'), 500);
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      createNav();
+      renderSections();
+      
+      // Add intersection observer for fade-in effects
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('opacity-100');
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      document.querySelectorAll('.section-card').forEach(card => {
+        observer.observe(card);
+      });
+    });
+
+    // Add some interactive particle effects on mouse move
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = mouseX - rect.left - rect.width / 2;
+        const y = mouseY - rect.top - rect.height / 2;
+        
+        const angle = Math.atan2(y, x) * 180 / Math.PI;
+        const distance = Math.sqrt(x * x + y * y);
+        const maxDistance = 300;
+        
+        if (distance < maxDistance) {
+          const intensity = 1 - (distance / maxDistance);
+          card.style.transform = `translateY(-8px) scale(1.02) rotateY(${x * 0.01}deg) rotateX(${-y * 0.01}deg)`;
+          card.style.boxShadow = `0 20px 40px rgba(102, 126, 234, ${0.3 * intensity})`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
